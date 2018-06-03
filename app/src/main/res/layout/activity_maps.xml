@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="fill_parent" >
+
+    <fragment
+        android:id="@+id/map"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:name="com.google.android.gms.maps.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        tools:context=".MapsActivity"
+        />
+
+    <Button
+        android:id="@+id/btnMarkSecondCorner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/mapbutton"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:text="Mark Second Corner"
+        android:onClick="BtnClicked"
+        android:enabled="false"
+        android:visibility="visible"/>
+
+    <Button
+        android:id="@+id/btnChangeMapType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/mapbutton"
+        android:paddingLeft="14dp"
+        android:paddingRight="14dp"
+        android:textSize="24dp"
+        android:onClick="BtnChangeMapTypeClicked"
+        android:enabled="true"
+        android:visibility="visible"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:onClick="CenterMapOnSelf"
+        android:id="@+id/tvInfo"
+        android:background="@color/material_deep_teal_200"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>
+
