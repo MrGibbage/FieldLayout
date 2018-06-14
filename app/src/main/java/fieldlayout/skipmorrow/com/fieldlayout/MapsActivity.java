@@ -289,19 +289,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void BtnChangeMapTypeClicked(View v) {
         Button b = findViewById(R.id.btnChangeMapType);
-        int mapType = mMap.getMapType();
-        int newMapType = GoogleMap.MAP_TYPE_SATELLITE;
-        if (mapType == GoogleMap.MAP_TYPE_SATELLITE) {
-            newMapType = GoogleMap.MAP_TYPE_NORMAL;
-            b.setText("S");
-        } else {
-            b.setText("N");
-        }
-        mMap.setMapType(newMapType);
+        mMap.setMapType(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? GoogleMap.MAP_TYPE_NORMAL : GoogleMap.MAP_TYPE_SATELLITE);
+        b.setText(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? "S" : "N");
         CenterMap();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("maptype", newMapType);
+        editor.putInt("maptype", mMap.getMapType());
         editor.apply();
     }
 
@@ -351,7 +344,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // add a breadcrumb circle on the map
         mMap.addCircle(new CircleOptions()
                 .center(latLng)
-                .radius(0.3f)
+                .radius(0.5f)
                 .strokeColor(Color.WHITE)
                 .fillColor(Color.WHITE));
 
