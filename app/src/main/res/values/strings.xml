@@ -5,6 +5,8 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="SAT">SAT</string>
+    <string name="NORM">NORM</string>
     <string name="start_text">Press START when you are standing at the first corner and you are ready to go to the second.</string>
 
     <string name="gps_status">"GPS Enabled?: %b %nAccuracy: %.2f meters %nLat: %.4f %nLong: %.4f "</string>
@@ -14,6 +16,7 @@
     <string name="map_act_field_dims_yards">%s %nLength: %.2f yards %nWidth: %.2f yards</string>
     <string name="map_act_status_yards">%s %nLength: %.2f yards %nWidth: %.2f yards%nGPS Accuracy: %.2f meters%nDistance from Start Corner: %.2f yards</string>
     <string name="map_act_status_meters">%s %nLength: %.2f meters %nWidth: %.2f meters%nGPS Accuracy: %.2f meters%nDistance from Start Corner: %.2f meters</string>
+    <string name="MARK_SECOND_CORNER">Mark Second Corner</string>
 
     <string name="SP_DIRECTION">DIRECTION</string>
     <string name="SP_FIRST_SIDE">FIRSTSIDE</string>

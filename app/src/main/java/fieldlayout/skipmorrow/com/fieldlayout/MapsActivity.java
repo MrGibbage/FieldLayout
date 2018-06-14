@@ -10,6 +10,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -88,8 +88,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     currentLocation = location;
                     if (mMap != null) {
                         locationChanged(location);
-                    } else {
-                        //Log.i("MapsAct LocationChanged", "Location changed, but mMap is null so nothing is displayed");
                     }
                 }
 
@@ -114,14 +112,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             firstside = prefs.getString(getString(R.string.SP_FIRST_SIDE), "LONG").equals("LONG") ? FirstSide.LONG : FirstSide.SHORT;
 
             Button b = findViewById(R.id.btnChangeMapType);
-            b.setText("Sat");
+            b.setText(getString(R.string.SAT));
         }
         Log.i("FieldLayout_MapAct", "OnCreate complete");
     }
 
     // from https://stackoverflow.com/questions/33865445/gps-location-provider-requires-access-fine-location-permission-for-android-6-0
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], int[] grantResults) {
         switch (requestCode) {
             case ACCESS_FINE_LOCATION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.

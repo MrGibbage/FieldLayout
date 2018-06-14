@@ -1,14 +1,9 @@
 package fieldlayout.skipmorrow.com.fieldlayout;
 
-/**
- * Created by skip on 4/14/2015.
- */
-import android.location.Location;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by skip on 4/11/2015.
@@ -55,11 +50,11 @@ public class FieldClass implements Comparable<FieldClass> {
 
     private Unit _unit;
 
-    String _strFieldType;
+    private String _strFieldType;
 
     private int _index;
 
-    public FieldClass (String strFieldType,
+    private FieldClass(String strFieldType,
                        Float fFieldLength,
                        Float fFieldWidth,
                        Float fEndZoneLength,
@@ -76,12 +71,12 @@ public class FieldClass implements Comparable<FieldClass> {
     }
 
     @Override
-    public int compareTo(FieldClass fc) {
+    public int compareTo(@NonNull FieldClass fc) {
         return this._strFieldType.compareTo(fc._strFieldType);
     }
 
     public static ArrayList<FieldClass> BuildFieldList() {
-        ArrayList<FieldClass> fieldList = new ArrayList<FieldClass>();
+        ArrayList<FieldClass> fieldList = new ArrayList<>();
         fieldList.add(new FieldClass("Football (Canadian)",     110f,   65f,   10f,   Unit.YARDS,   true,   0));
         fieldList.add(new FieldClass("Football (US)",           100f,   53.3f, 10f,   Unit.YARDS,   true,   1));
         fieldList.add(new FieldClass("Soccer (U10)",            70f,    40f,   0f,    Unit.YARDS,   false,  2));
@@ -106,7 +101,7 @@ public class FieldClass implements Comparable<FieldClass> {
     }
 
     public static ArrayList<String> GetFieldtypeList() {
-        ArrayList<String> typeList = new ArrayList<String>();
+        ArrayList<String> typeList = new ArrayList<>();
         ArrayList<FieldClass> fcl = BuildFieldList();
         for (int i = 0; i < fcl.size(); i++) {
             typeList.add(fcl.get(i)._strFieldType);
