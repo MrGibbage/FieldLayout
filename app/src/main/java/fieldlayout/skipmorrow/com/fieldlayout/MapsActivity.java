@@ -24,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -67,8 +68,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             layout.screenBrightness = 1F;
             getWindow().setAttributes(layout);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_NOSENSOR);
-            Bundle extras = getIntent().getExtras();
-            MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
             if (mapFragment != null) {
                 mapFragment.getMapAsync(this);
             } else {
@@ -85,7 +86,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Called when a new location is found by the network location provider.
                     //Log.i("FieldLayout_MapAct", "Got a location update");
                     currentLocation = location;
-                    locationChanged(location);
+                    if (mMap != null) {
+                        locationChanged(location);
+                    } else {
+                        //Log.i("MapsAct LocationChanged", "Location changed, but mMap is null so nothing is displayed");
+                    }
                 }
 
                 public void onStatusChanged(String provider, int status, Bundle extras) {
@@ -104,38 +109,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
             }
 
-
-            if (extras != null) {
-                //iButtonSelected = extras.getInt("button_selected", 0);
-                double lat = extras.getDouble(getString(R.string.SP_START_LATITUDE));
-                double lng = extras.getDouble(getString(R.string.SP_START_LONGITUDE));
-                int fieldNum = extras.getInt(getString(R.string.SP_DEFAULTFIELD));
-                startLocation = new Location("");
-                startLocation.setLatitude(lat);
-                startLocation.setLongitude(lng);
-
-                field = FieldClass.GetFieldWithIndex(fieldNum);
-            }
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-            int mapType = prefs.getInt(getString(R.string.SP_MAP_TYPE), GoogleMap.MAP_TYPE_SATELLITE);
             direction = prefs.getString(getString(R.string.SP_DIRECTION), "CW").equals("CW") ? Direction.CW : Direction.CCW;
             firstside = prefs.getString(getString(R.string.SP_FIRST_SIDE), "LONG").equals("LONG") ? FirstSide.LONG : FirstSide.SHORT;
 
             Button b = findViewById(R.id.btnChangeMapType);
-            if (mapType == GoogleMap.MAP_TYPE_SATELLITE) {
-                b.setText("N");
-            } else {
-                b.setText("S");
-            }
-
-            TextView tv = findViewById(R.id.tvInfo);
-            if (field.get_unit().equals(Unit.METERS)) {
-                tv.setText(getString(R.string.map_act_field_dims_meters, field.get_fFieldLengthInMeters(), field.get_fFieldWidthInMeters()));
-            } else {
-                tv.setText(getString(R.string.map_act_field_dims_yards, field.get_fFieldLengthInYards(), field.get_fFieldWidthInYards()));
-            }
-
+            b.setText("Sat");
         }
         Log.i("FieldLayout_MapAct", "OnCreate complete");
     }
@@ -167,6 +146,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onResume() {
         super.onResume();
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            //iButtonSelected = extras.getInt("button_selected", 0);
+            double lat = extras.getDouble(getString(R.string.SP_START_LATITUDE));
+            double lng = extras.getDouble(getString(R.string.SP_START_LONGITUDE));
+            int fieldNum = extras.getInt(getString(R.string.SP_DEFAULTFIELD));
+            startLocation = new Location("");
+            startLocation.setLatitude(lat);
+            startLocation.setLongitude(lng);
+
+            Log.i("MapsAct", "extras received.");
+            Log.i("MapsAct", "lat = " + lat);
+            Log.i("MapsAct", "lng = " + lng);
+            Log.i("MapsAct", "fieldnum = " + fieldNum);
+
+            field = FieldClass.GetFieldWithIndex(fieldNum);
+
+            TextView tv = findViewById(R.id.tvInfo);
+            if (field.get_unit().equals(Unit.METERS)) {
+                tv.setText(getString(R.string.map_act_field_dims_meters, field.get_strFieldType(), field.get_fFieldLengthInMeters(), field.get_fFieldWidthInMeters()));
+            } else {
+                tv.setText(getString(R.string.map_act_field_dims_yards, field.get_strFieldType(), field.get_fFieldLengthInYards(), field.get_fFieldWidthInYards()));
+            }
+        }
     }
 
 
@@ -174,11 +177,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     protected void onStop() {
         // Disconnecting the client invalidates it.
         super.onStop();
-
+        mMap.clear();
+        mMap = null;
+        startLocation = null;
+        currentLocation = null;
     }
 
     protected void DrawFieldRectangle(LatLng latLng) {
-        Log.i("FieldLayout_MapAct", "Drawing the field");
+        //Log.i("FieldLayout_MapAct", "Drawing the field");
         if (fieldRectangle!=null) fieldRectangle.remove();
         if (endZoneLine1!=null) endZoneLine1.remove();
         if (endZoneLine2!=null) endZoneLine2.remove();
@@ -288,14 +294,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public void BtnChangeMapTypeClicked(View v) {
-        Button b = findViewById(R.id.btnChangeMapType);
-        mMap.setMapType(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? GoogleMap.MAP_TYPE_NORMAL : GoogleMap.MAP_TYPE_SATELLITE);
-        b.setText(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? "S" : "N");
-        CenterMap();
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putInt("maptype", mMap.getMapType());
-        editor.apply();
+        if (mMap != null) {
+            Button b = findViewById(R.id.btnChangeMapType);
+            mMap.setMapType(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? GoogleMap.MAP_TYPE_NORMAL : GoogleMap.MAP_TYPE_SATELLITE);
+            b.setText(mMap.getMapType() == GoogleMap.MAP_TYPE_SATELLITE ? "Sat" : "Norm");
+            CenterMap();
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putInt("maptype", mMap.getMapType());
+            editor.apply();
+        } else {
+            Toast.makeText(this, "Map is not ready yet", Toast.LENGTH_LONG).show();
+        }
     }
 
     // called from the onclick listener. It required a View parameter, so I don't use it from other methods here.
@@ -332,7 +342,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     // All of the things that need to be done when we get an updated location
     public void locationChanged(Location location) {
-        Log.i("FieldLayout_MapAct", "locationChanged");
+        //Log.i("FieldLayout_MapAct", "locationChanged");
         double longitude = location.getLongitude();
         double latitude = location.getLatitude();
         double accuracy = location.getAccuracy();
@@ -352,12 +362,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         TextView tv = findViewById(R.id.tvInfo);
         if (field.get_unit().equals(Unit.YARDS)) {
             tv.setText(getString(R.string.map_act_status_yards,
+                    field.get_strFieldType(),
                     field.get_fFieldLengthInYards(),
                     field.get_fFieldWidthInYards(),
                     accuracy,
                     SphericalUtil.computeDistanceBetween(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()), latLng) * 1.09361));
         } else {
             tv.setText(getString(R.string.map_act_status_meters,
+                    field.get_strFieldType(),
                     field.get_fFieldLengthInYards(),
                     field.get_fFieldWidthInMeters(),
                     accuracy,
@@ -369,9 +381,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onMapReady(GoogleMap googleMap) {
         Log.i("FieldLayout_MapAct", "onMapReady called. Map must be ready.");
         mMap = googleMap;
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        DrawFieldRectangle(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()));
-        CenterMap();
+        if (mMap != null) {
+            mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+            DrawFieldRectangle(new LatLng(startLocation.getLatitude(), startLocation.getLongitude()));
+            CenterMap();
+        } else {
+            Log.i("MapsAct", "onMapReady called, but googleMap is null");
+        }
         //mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(startLocation.getLatitude(), startLocation.getLongitude())));
         //mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
     }

@@ -82,14 +82,14 @@ public class FieldClass implements Comparable<FieldClass> {
 
     public static ArrayList<FieldClass> BuildFieldList() {
         ArrayList<FieldClass> fieldList = new ArrayList<FieldClass>();
-        fieldList.add(new FieldClass("Ultimate Frisbee (AUDL)", 80f,    53.3f, 20f,   Unit.YARDS,   true,   0));
+        fieldList.add(new FieldClass("Football (Canadian)",     110f,   65f,   10f,   Unit.YARDS,   true,   0));
         fieldList.add(new FieldClass("Football (US)",           100f,   53.3f, 10f,   Unit.YARDS,   true,   1));
-        fieldList.add(new FieldClass("Soccer (U14)",            100f,   60f,   0f,    Unit.YARDS,   false,  2));
+        fieldList.add(new FieldClass("Soccer (U10)",            70f,    40f,   0f,    Unit.YARDS,   false,  2));
         fieldList.add(new FieldClass("Soccer (U12)",            80f,    50f,   0f,    Unit.YARDS,   false,  3));
-        fieldList.add(new FieldClass("Soccer (U10)",            70f,    40f,   0f,    Unit.YARDS,   false,  4));
-        fieldList.add(new FieldClass("Football (Canadian)",     110f,   65f,   10f,   Unit.YARDS,   true,   5));
-        fieldList.add(new FieldClass("Ultimate Frisbee (USAU)", 70f,    40f,   25f,   Unit.YARDS,   true,   6));
-        fieldList.add(new FieldClass("Ultimate Frisbee (MLU)",  80f,    53.3f, 20f,   Unit.YARDS,   true,   7));
+        fieldList.add(new FieldClass("Soccer (U14)",            100f,   60f,   0f,    Unit.YARDS,   false,  4));
+        fieldList.add(new FieldClass("Ultimate Frisbee (AUDL)", 80f,    53.3f, 20f,   Unit.YARDS,   true,   5));
+        fieldList.add(new FieldClass("Ultimate Frisbee (MLU)",  80f,    53.3f, 20f,   Unit.YARDS,   true,   6));
+        fieldList.add(new FieldClass("Ultimate Frisbee (USAU)", 70f,    40f,   25f,   Unit.YARDS,   true,   7));
 
         Collections.sort(fieldList);
         return fieldList;
@@ -161,4 +161,5 @@ public class FieldClass implements Comparable<FieldClass> {
     public Boolean get_bHasEndZone() {
         return _bHasEndZone;
     }
+
 }

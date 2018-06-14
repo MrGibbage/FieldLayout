@@ -53,6 +53,37 @@ public class StartActivity extends AppCompatActivity {
 
         ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, ACCESS_FINE_LOCATION_REQUEST_CODE);
 
+    }
+
+
+    // from https://stackoverflow.com/questions/33865445/gps-location-provider-requires-access-fine-location-permission-for-android-6-0
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ACCESS_FINE_LOCATION_REQUEST_CODE: {
+                // If request is cancelled, the result arrays are empty.
+                if (!(grantResults.length > 0)
+                        && !(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    Toast.makeText(this, "Must have GPS permissions for this app to work", Toast.LENGTH_LONG).show();
+                }
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
+    }
+
+    public boolean checkLocationPermission()
+    {
+        String permission = "android.permission.ACCESS_FINE_LOCATION";
+        int res = this.checkCallingOrSelfPermission(permission);
+        return (res == PackageManager.PERMISSION_GRANTED);
+    }
+
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+
         if (checkLocationPermission()) {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             WindowManager.LayoutParams layout = getWindow().getAttributes();
@@ -68,7 +99,6 @@ public class StartActivity extends AppCompatActivity {
 
             String fs = prefs.getString(getString(R.string.SP_FIRST_SIDE), "LONG");
             firstside = Objects.equals(fs, "LONG") ? FirstSide.LONG : FirstSide.SHORT;
-            Log.i("FieldLayout_StartAct", "fs = " + fs + "; firstside = " + firstside.toString());
             ColorFirstSideButtons(firstside);
 
             SetupFieldSpinner();
@@ -127,35 +157,7 @@ public class StartActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Must enable GPS Permissions for this app", Toast.LENGTH_LONG).show();
         }
-    }
 
-
-    // from https://stackoverflow.com/questions/33865445/gps-location-provider-requires-access-fine-location-permission-for-android-6-0
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case ACCESS_FINE_LOCATION_REQUEST_CODE: {
-                // If request is cancelled, the result arrays are empty.
-                if (!(grantResults.length > 0)
-                        && !(grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    Toast.makeText(this, "Must have GPS permissions for this app to work", Toast.LENGTH_LONG).show();
-                }
-            }
-            // other 'case' lines to check for other
-            // permissions this app might request
-        }
-    }
-
-    public boolean checkLocationPermission()
-    {
-        String permission = "android.permission.ACCESS_FINE_LOCATION";
-        int res = this.checkCallingOrSelfPermission(permission);
-        return (res == PackageManager.PERMISSION_GRANTED);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
@@ -194,7 +196,7 @@ public class StartActivity extends AppCompatActivity {
 
     private void ColorFirstSideButtons (FirstSide fs) {
         String strFirstSide = (fs == FirstSide.LONG ? "LONG" : "SHORT");
-        Log.i("FieldLayout_StartAct", "Coloring Direction buttons: " + strFirstSide);
+        Log.i("FieldLayout_StartAct", "Coloring First Side buttons: " + strFirstSide);
         Button btnLong = (Button) findViewById(R.id.BtnFirstSideLong);
         Button btnShort = (Button) findViewById(R.id.BtnFirstSideShort);
         btnLong.setBackgroundColor(fs== FirstSide.LONG ? Color.GREEN : Color.LTGRAY);
@@ -239,7 +241,7 @@ public class StartActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.gps_fix_quality);
 
         if (currentLocation != null) {
-            tv.setText(getString(R.string.gps_status, isGPSEnabled(), currentLocation.getAccuracy()));
+            tv.setText(getString(R.string.gps_status, isGPSEnabled(), currentLocation.getAccuracy(), currentLocation.getLatitude(), currentLocation.getLongitude()));
         } else {
             tv.setText(getString(R.string.gps_status_null, isGPSEnabled()));
         }
