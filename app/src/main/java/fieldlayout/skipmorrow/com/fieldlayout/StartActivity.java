@@ -16,8 +16,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -59,7 +57,7 @@ public class StartActivity extends Activity {
 
     // from https://stackoverflow.com/questions/33865445/gps-location-provider-requires-access-fine-location-permission-for-android-6-0
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
         switch (requestCode) {
             case ACCESS_FINE_LOCATION_REQUEST_CODE: {
                 // If request is cancelled, the result arrays are empty.
@@ -103,7 +101,7 @@ public class StartActivity extends Activity {
             ColorFirstSideButtons(firstside);
 
             SetupFieldSpinner();
-            Spinner spinner = (Spinner) findViewById(R.id.fieldtypedropdown);
+            Spinner spinner = findViewById(R.id.fieldtypedropdown);
             spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -115,7 +113,7 @@ public class StartActivity extends Activity {
                     field = FieldClass.BuildFieldList().get(position);
                     UpdateFieldParametersTextView(field.get_index());
                     UpdateFieldImage();
-                    CheckBox cbLayOutEndZones = (CheckBox) findViewById(R.id.CbLayOutEndZones);
+                    CheckBox cbLayOutEndZones = findViewById(R.id.CbLayOutEndZones);
                     cbLayOutEndZones.setEnabled(field.get_bHasEndZone());
                 }
 
@@ -176,10 +174,10 @@ public class StartActivity extends Activity {
         intent.putExtra(getString(R.string.SP_START_LONGITUDE), lng);
         Log.i("FieldLayout_StartAct", "Start location lat = " + lat);
         Log.i("FieldLayout_StartAct", "Start location lng = " + lng);
-        Spinner spinner = (Spinner) findViewById(R.id.fieldtypedropdown);
+        Spinner spinner = findViewById(R.id.fieldtypedropdown);
         int sel = spinner.getSelectedItemPosition();
         intent.putExtra(getString(R.string.SP_DEFAULTFIELD), sel);
-        CheckBox cbLayoutEndZones = (CheckBox) findViewById(R.id.CbLayOutEndZones);
+        CheckBox cbLayoutEndZones = findViewById(R.id.CbLayOutEndZones);
         boolean bLayoutEndZones = cbLayoutEndZones.isChecked();
         intent.putExtra(getString(R.string.SP_LAYOUT_ENDZONES), bLayoutEndZones);
         startActivity(intent);
@@ -189,8 +187,8 @@ public class StartActivity extends Activity {
     private void ColorDirectionButtons (Direction d) {
         String strDirection = (d == Direction.CW ? "CW" : "CCW");
         Log.i("FieldLayout_StartAct", "Coloring Direction buttons: " + strDirection);
-        Button btnCw = (Button) findViewById(R.id.BtnDir_CW);
-        Button btnCcw = (Button) findViewById(R.id.BtnDir_CCW);
+        Button btnCw = findViewById(R.id.BtnDir_CW);
+        Button btnCcw = findViewById(R.id.BtnDir_CCW);
         btnCw.setBackgroundColor(d==Direction.CW ? Color.GREEN : Color.LTGRAY);
         btnCcw.setBackgroundColor(d==Direction.CCW ? Color.GREEN : Color.LTGRAY);
     }
@@ -198,15 +196,15 @@ public class StartActivity extends Activity {
     private void ColorFirstSideButtons (FirstSide fs) {
         String strFirstSide = (fs == FirstSide.LONG ? "LONG" : "SHORT");
         Log.i("FieldLayout_StartAct", "Coloring First Side buttons: " + strFirstSide);
-        Button btnLong = (Button) findViewById(R.id.BtnFirstSideLong);
-        Button btnShort = (Button) findViewById(R.id.BtnFirstSideShort);
+        Button btnLong = findViewById(R.id.BtnFirstSideLong);
+        Button btnShort = findViewById(R.id.BtnFirstSideShort);
         btnLong.setBackgroundColor(fs== FirstSide.LONG ? Color.GREEN : Color.LTGRAY);
         btnShort.setBackgroundColor(fs== FirstSide.SHORT ? Color.GREEN : Color.LTGRAY);
     }
 
     public void UpdateFieldImage() {
         boolean bEndZones = field.get_bHasEndZone();
-        ImageView iv = (ImageView) findViewById(R.id.fieldimage);
+        ImageView iv = findViewById(R.id.fieldimage);
 
         if (bEndZones && direction.equals(Direction.CW) && firstside.equals(FirstSide.LONG)) {iv.setImageResource(R.drawable.field_with_end_zone_cw_long);}
         if (bEndZones && direction.equals(Direction.CCW) && firstside.equals(FirstSide.LONG)) {iv.setImageResource(R.drawable.field_with_end_zone_ccw_long);}
@@ -220,7 +218,7 @@ public class StartActivity extends Activity {
     }
 
     public void UpdateFieldParametersTextView(int index) {
-        TextView tv = (TextView) findViewById(R.id.fieldproperties);
+        TextView tv = findViewById(R.id.fieldproperties);
         FieldClass fc = FieldClass.GetFieldWithIndex(index);
         if (fc==null) {
             tv.setText(getString(R.string.field_index_missing, index));
@@ -239,7 +237,7 @@ public class StartActivity extends Activity {
     }
 
     public void UpdateGpsStatusText(Location currentLocation) {
-        TextView tv = (TextView) findViewById(R.id.gps_fix_quality);
+        TextView tv = findViewById(R.id.gps_fix_quality);
 
         if (currentLocation != null) {
             tv.setText(getString(R.string.gps_status, isGPSEnabled(), currentLocation.getAccuracy(), currentLocation.getLatitude(), currentLocation.getLongitude()));
@@ -247,7 +245,7 @@ public class StartActivity extends Activity {
             tv.setText(getString(R.string.gps_status_null, isGPSEnabled()));
         }
 
-        Button startButton = (Button) findViewById(R.id.start_button);
+        Button startButton = findViewById(R.id.start_button);
         startButton.setEnabled((currentLocation != null ? currentLocation.getAccuracy() : 100) < 15f);
     }
 
@@ -256,7 +254,7 @@ public class StartActivity extends Activity {
     }
 
     void SetupFieldSpinner() {
-        Spinner fieldTypes = (Spinner) findViewById(R.id.fieldtypedropdown);
+        Spinner fieldTypes = findViewById(R.id.fieldtypedropdown);
         ArrayList<String> fcl = FieldClass.GetFieldtypeList();
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, fcl);
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -270,7 +268,7 @@ public class StartActivity extends Activity {
 
         boolean layoutEndZones = prefs.getBoolean(getString(R.string.SP_LAYOUT_ENDZONES), true);
         FieldClass fc = FieldClass.BuildFieldList().get(defaultField);
-        CheckBox cbLayOutEndZones = (CheckBox) findViewById(R.id.CbLayOutEndZones);
+        CheckBox cbLayOutEndZones = findViewById(R.id.CbLayOutEndZones);
         cbLayOutEndZones.setEnabled(fc.get_bHasEndZone());
         cbLayOutEndZones.setChecked(layoutEndZones);
     }
@@ -316,7 +314,7 @@ public class StartActivity extends Activity {
     }
 
     public void CbLayOutEndZonesClicked(View view) {
-        CheckBox cbLayOutEndZones = (CheckBox) findViewById(R.id.CbLayOutEndZones);
+        CheckBox cbLayOutEndZones = findViewById(R.id.CbLayOutEndZones);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(StartActivity.this);
         SharedPreferences.Editor editor = prefs.edit();
         editor.putBoolean(getString(R.string.SP_LAYOUT_ENDZONES), cbLayOutEndZones.isChecked());
